@@ -1,9 +1,12 @@
 export interface Announcement {
     id: number;
     title: string;
+    description?: string;
+    category: string;
     location: string;
     status: 'found' | 'lost';
-    dateText: string;
+    dateFound: string;
+    isReturned: boolean;
     imageUrl?: string;
-    description?: string;
+    ownerId?: number;
 }

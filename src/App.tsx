@@ -1,22 +1,33 @@
-import { Layout, Typography, Button, Row, Col, Select } from 'antd';
+import { useEffect, useState } from 'react';
+
+import { Layout, Typography, Button, Row, Col, Select, Spin, Alert } from 'antd';
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 
 import MainHeader from './components/MainHeader';
 import AnnouncementCard from './components/AnnouncementCard';
 import type { Announcement } from './types/announcement';
+import { itemService } from './services/itemService';
 
 const { Content } = Layout;
 const { Title, Paragraph } = Typography;
 
-// Мок-данные (пока не подключен бэкенд)
-const mockAnnouncements: Announcement[] = [
-  { id: 1, title: "Наушники с переходником", location: "пр-кт. Вернадского, 78", status: "found", dateText: "неделю назад", imageUrl: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80" },
-  { id: 2, title: "Airpods", location: "ул. Малая Пироговская, 1, стр. 5", status: "found", dateText: "более недели назад", imageUrl: "https://images.unsplash.com/photo-1588444837495-c6cfeb53f32d?w=500&q=80" },
-  { id: 3, title: "Белая зарядка от ноутбука HUAWEI MateBook", location: "пр-кт. Вернадского, 78", status: "lost", dateText: "более недели назад" },
-  { id: 4, title: "Зарядка от ноутбука Honor белого цвета (разъём type c)", location: "пр-кт. Вернадского, 78", status: "lost", dateText: "более недели назад" }
-];
-
 function App() {
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    itemService.getAllItems()
+      .then((data) => {
+        setAnnouncements(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message || 'Что-то пошло не так...');
+        setLoading(false);
+      });
+  }, []);
+
   return (
     <Layout style={{ minHeight: '100vh', backgroundColor: '#f8fdfd' }}>
       <MainHeader />
@@ -52,14 +63,34 @@ function App() {
             </div>
           </div>
 
-          {/* Сетка карточек */}
-          <Row gutter={[20, 20]}>
-            {mockAnnouncements.map((item) => (
-              <Col xs={24} sm={12} md={8} lg={6} key={item.id}>
-                <AnnouncementCard item={item} />
-              </Col>
-            ))}
-          </Row>
+
+          {loading && (
+            <div style={{ textAlign: 'center', padding: '50px '}}>
+              <Spin size="large" tip="Загрузка объявлений..." />
+            </div>
+          )}
+
+          {error && (
+            <Alert message="Ошибка сервера" description={error} type="error" showIcon style={{ marginBottom: '20px' }} />
+          )}
+
+          {!loading && !error && announcements.length === 0 && (
+            <div style={{ textAlign: 'center', padding: '50px', color: '#8c8c8c' }}>
+              <h3>Пока нет ни одного объявления!</h3>
+            </div>
+          )}
+
+
+          {!loading && !error && (
+            <Row gutter={[20, 20]}>
+              {announcements.map((item) => (
+                <Col xs={24} sm={12} md={8} lg={6} key={item.id}>
+                  <AnnouncementCard item={item} />
+                </Col>
+              ))}
+            </Row>
+          )}
+
         </div>
 
       </Content>

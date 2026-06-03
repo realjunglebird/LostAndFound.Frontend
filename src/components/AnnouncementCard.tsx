@@ -40,7 +40,7 @@ export default function AnnouncementCard({ item }: Props) {
           <Tag color="error" style={{ borderRadius: '6px', border: 'none', backgroundColor: '#fff1f0', color: '#ff4d4f' }}>Потеряно</Tag>
         )}
         <span style={{ color: '#bfbfbf', fontSize: '12px' }}>
-          <ClockCircleOutlined style={{ marginRight: '4px' }} /> {item.dateText}
+          <ClockCircleOutlined style={{ marginRight: '4px' }} /> {item.dateFound}
         </span>
       </Space>
     </Card>
