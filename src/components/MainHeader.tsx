@@ -1,5 +1,6 @@
 import { Layout, Menu, Input, Badge, Button, Space } from "antd";
 import { SearchOutlined, BellOutlined, PlusOutlined, UserOutlined } from "@ant-design/icons";
+import { Link } from 'react-router-dom';
 
 const { Header } = Layout;
 
@@ -40,7 +41,9 @@ export default function MainHeader() {
         <Badge dot>
           <Button type="text" shape="circle" icon={<BellOutlined style={{ fontSize: '18px'}} />} />
         </Badge>
-        <Button type="primary" shape="circle" icon={<PlusOutlined />} />
+        <Link to="/create">
+          <Button type="primary" shape="circle" icon={<PlusOutlined />} />
+        </Link>
         <Button type="primary" shape="circle" icon={<UserOutlined />} />
       </Space>
     </Header>

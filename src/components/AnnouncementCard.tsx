@@ -1,15 +1,19 @@
 import { Card, Tag, Space } from 'antd';
 import { EnvironmentOutlined, ClockCircleOutlined, PictureOutlined } from '@ant-design/icons';
 import type { Announcement } from '../types/announcement';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
   item: Announcement;
 }
 
 export default function AnnouncementCard({ item }: Props) {
+  const navigate = useNavigate();
+
   return (
     <Card
       hoverable
+      onClick={() => navigate(`/item/${item.id}`)}
       style={{ borderRadius: '16px', overflow: 'hidden', height: '100%', display: 'flex', flexDirection: 'column' }}
       bodyStyle={{ padding: '16px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}
       cover={
