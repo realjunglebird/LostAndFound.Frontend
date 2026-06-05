@@ -3,6 +3,7 @@ import { Form, Input, Select, Radio, Button, Upload, message, Typography } from 
 import { InboxOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import FormItem from 'antd/es/form/FormItem';
+import { itemService } from '../services/itemService';
 
 const { Title } = Typography;
 const { Dragger } = Upload;
@@ -14,13 +15,14 @@ export default function CreatePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const uploadProps = {
-    onRemove: (file: any) => {
-      setFileList((prev) => prev.filter((item) => item.uid !== file.uid));
+    beforeUpload: () => false,
+    onChange: (info: any) => {
+      setFileList(info.fileList);
     },
-    beforeUpload: (file: any) => {
-      setFileList([file]);
-      return false;
-    },
+    // onRemove: (file: any) => {
+    //   setFileList((prev) => prev.filter((item) => item.uid !== file.uid));
+    // },
+
     fileList,
     maxCount: 1,
   };
@@ -36,10 +38,12 @@ export default function CreatePage() {
     formData.append('description', values.description || '');
 
     if (fileList.length > 0) {
-      formData.append('image', fileList[0] as Blob);
+      const actualFile = fileList[0].originFileObj || fileList[0];
+      formData.append('image', actualFile as Blob);
     }
 
     try {
+      await itemService.createItem(formData);
       message.success('Объявление успешно создано!');
       navigate('/');
     } catch (error) {
@@ -80,6 +84,8 @@ export default function CreatePage() {
               <Select placeholder="Выберите..." size="large">
                 <Select.Option value="Электроника">Электроника</Select.Option>
                 <Select.Option value="Документы">Документы</Select.Option>
+                <Select.Option value="Одежда">Одежда</Select.Option>
+                <Select.Option value="Другое">Другое</Select.Option>
               </Select>
             </Form.Item>
 
