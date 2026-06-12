@@ -14,17 +14,15 @@ export default function ItemDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // TODO: Добавить метод получения item по id
   useEffect(() => {
-    itemService.getAllItems()
-      .then(data => {
-        const foundItem = data.find(i => i.id === Number(id));
-        if (foundItem) {
-          setItem(foundItem);
-        } else {
-          setError('Объявление не найдено!');
-        }
-      })
+    if (!id) {
+      setError("ID объявления не найден в URL");
+      setLoading(false);
+      return;
+    }
+
+    itemService.getItemById(id)
+      .then((data) => setItem(data))
       .catch(err => setError(err.message))
       .finally(() => setLoading(false));
   }, [id]);
