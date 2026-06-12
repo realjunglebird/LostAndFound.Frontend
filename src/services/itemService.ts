@@ -1,9 +1,9 @@
-import type { Announcement } from "../types/announcement";
+import type { Item } from "../types/item";
 
 export const itemService = {
 
   // Получение всех находок
-  getAllItems: async (): Promise<Announcement[]> => {
+  getAllItems: async (): Promise<Item[]> => {
     const response = await fetch('/api/items');
     if (!response.ok) {
       throw new Error('Ошибка при получении данных с сервера!');
@@ -12,7 +12,7 @@ export const itemService = {
   },
 
   // Получение конкретной находки
-  getItemById: async (id: number | string): Promise<Announcement> => {
+  getItemById: async (id: number | string): Promise<Item> => {
     const response = await fetch(`/api/items/${id}`);
     if (!response.ok) {
       if (response.status == 404) {
@@ -24,7 +24,7 @@ export const itemService = {
   },
 
   // Добавление находки
-  createItem: async (formData: FormData): Promise<Announcement> => {
+  createItem: async (formData: FormData): Promise<Item> => {
     const response = await fetch('/api/items', {
       method: 'POST',
       body: formData,

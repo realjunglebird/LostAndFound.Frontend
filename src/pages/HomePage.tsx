@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Layout, Typography, Button, Row, Col, Select, Spin, Alert } from 'antd';
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
-import type { Announcement } from '../types/announcement';
+import type { Item } from '../types/item';
 import { itemService } from '../services/itemService';
-import AnnouncementCard from '../components/AnnouncementCard';
+import ItemCard from '../components/ItemCard';
 
 const { Content } = Layout;
 const { Title, Paragraph } = Typography;
 
 export default function HomePage() {
-  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [announcements, setAnnouncements] = useState<Item[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -81,7 +81,7 @@ export default function HomePage() {
             <Row gutter={[20, 20]}>
               {announcements.map((item) => (
                 <Col xs={24} sm={12} md={8} lg={6} key={item.id}>
-                  <AnnouncementCard item={item} />
+                  <ItemCard item={item} />
                 </Col>
               ))}
             </Row>

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Spin, Alert, Tag, Space, Typography, Button, Divider } from 'antd';
 import { EnvironmentOutlined, ClockCircleOutlined, UserOutlined, ArrowLeftOutlined } from "@ant-design/icons";
-import type { Announcement } from "../types/announcement";
+import type { Item } from "../types/item";
 import { itemService } from "../services/itemService";
 
 const { Paragraph, Text, Title } = Typography;
@@ -10,7 +10,7 @@ const { Paragraph, Text, Title } = Typography;
 export default function ItemDetailsPage() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>(); // Получение id из адресной строки
-  const [item, setItem] = useState<Announcement | null>(null);
+  const [item, setItem] = useState<Item | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

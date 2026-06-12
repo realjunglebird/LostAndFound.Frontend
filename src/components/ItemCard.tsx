@@ -1,13 +1,13 @@
 import { Card, Tag, Space } from 'antd';
 import { EnvironmentOutlined, ClockCircleOutlined, PictureOutlined } from '@ant-design/icons';
-import type { Announcement } from '../types/announcement';
+import type { Item } from '../types/item';
 import { useNavigate } from 'react-router-dom';
 
 interface Props {
-  item: Announcement;
+  item: Item;
 }
 
-export default function AnnouncementCard({ item }: Props) {
+export default function ItemCard({ item }: Props) {
   const navigate = useNavigate();
 
   return (
