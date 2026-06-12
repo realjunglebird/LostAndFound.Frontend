@@ -4,6 +4,7 @@ import { Spin, Alert, Tag, Space, Typography, Button, Divider } from 'antd';
 import { EnvironmentOutlined, ClockCircleOutlined, UserOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import type { Item } from "../types/item";
 import { itemService } from "../services/itemService";
+import { formatDate } from "../utils/dateUtils";
 
 const { Paragraph, Text, Title } = Typography;
 
@@ -67,7 +68,7 @@ export default function ItemDetailsPage() {
 
           <div style={{ marginBottom: '24px', color: '#595959' }}>
             <p><EnvironmentOutlined style={{ marginRight: '8px' }} /> <strong>Где:</strong> {item.location}</p>
-            <p><ClockCircleOutlined style={{ marginRight: '8px' }} /> <strong>Когда:</strong> {item.dateFound}</p>
+            <p><ClockCircleOutlined style={{ marginRight: '8px' }} /> <strong>Когда:</strong> {formatDate(item.dateFound)}</p>
           </div>
 
           <Divider />
