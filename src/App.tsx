@@ -5,6 +5,7 @@ import MainHeader from './components/MainHeader';
 import HomePage from './pages/HomePage';
 import CreatePage from './pages/CreatePage';
 import ItemDetailsPage from './pages/ItemDetailsPage';
+import NotFoundPage from './pages/NotFoundPage';
 import { LookupProvider, useLookup } from './context/LookupContext';
 
 const { Content } = Layout;
@@ -24,6 +25,7 @@ function AppContent() {
           <Route path="/" element={<HomePage />} />
           <Route path="/create" element={<CreatePage />} />
           <Route path="/item/:id" element={<ItemDetailsPage />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Content>
     </Layout>
