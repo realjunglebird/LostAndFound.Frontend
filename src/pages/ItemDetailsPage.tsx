@@ -5,12 +5,14 @@ import { EnvironmentOutlined, ClockCircleOutlined, UserOutlined, ArrowLeftOutlin
 import type { Item } from "../types/item";
 import { itemService } from "../services/itemService";
 import { formatDate } from "../utils/dateUtils";
+import { useLookup } from "../context/LookupContext";
 
-const { Paragraph, Text, Title } = Typography;
+const { Title } = Typography;
 
 export default function ItemDetailsPage() {
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>(); // Получение id из адресной строки
+  const { campusesMap, categoriesMap } = useLookup();
+  const { id } = useParams<{ id: string }>();
   const [item, setItem] = useState<Item | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -29,7 +31,7 @@ export default function ItemDetailsPage() {
   }, [id]);
 
   if (loading) return <div style={{ textAlign: 'center', padding: '50px' }}><Spin size="large" /></div>;
-  if (error || !item) return <div style={{ padding: '50px' }}><Alert message="Ошибка" description={error} type="error" /></div>;
+  if (error || !item) return <div style={{ padding: '50px' }}><Alert title="Ошибка" description={error} type="error" /></div>;
 
   return (
     <div style={{ maxWidth: '1000px', margin: '40px auto', padding: '0 24px' }}>
@@ -63,11 +65,11 @@ export default function ItemDetailsPage() {
             ) : (
               <Tag color="error">Потеряно</Tag>
             )}
-            <Tag color="blue">{item.category}</Tag>
+            <Tag color="blue">{categoriesMap[item.categoryId]}</Tag>
           </Space>
 
           <div style={{ marginBottom: '24px', color: '#595959' }}>
-            <p><EnvironmentOutlined style={{ marginRight: '8px' }} /> <strong>Где:</strong> {item.location}</p>
+            <p><EnvironmentOutlined style={{ marginRight: '8px' }} /> <strong>Где:</strong> {campusesMap[item.campusId]}</p>
             <p><ClockCircleOutlined style={{ marginRight: '8px' }} /> <strong>Когда:</strong> {formatDate(item.dateFound)}</p>
           </div>
 

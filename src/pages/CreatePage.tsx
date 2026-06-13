@@ -4,6 +4,7 @@ import { InboxOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import FormItem from 'antd/es/form/FormItem';
 import { itemService } from '../services/itemService';
+import { useLookup } from '../context/LookupContext';
 
 const { Title } = Typography;
 const { Dragger } = Upload;
@@ -11,6 +12,7 @@ const { Dragger } = Upload;
 export default function CreatePage() {
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  const { campuses, categories } = useLookup();
   const [fileList, setFileList] = useState<any[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -32,8 +34,8 @@ export default function CreatePage() {
 
     const formData = new FormData();
     formData.append('title', values.title);
-    formData.append('category', values.category);
-    formData.append('location', values.location);
+    formData.append('categoryId', values.categoryId);
+    formData.append('campusId', values.campusId);
     formData.append('status', values.status);
     formData.append('description', values.description || '');
 
@@ -75,28 +77,28 @@ export default function CreatePage() {
             </Radio.Group>
           </Form.Item>
 
+          {/* Название */}
           <FormItem name="title" label="Название" rules={[{ required: true }]}>
             <Input placeholder="Например, синяя папка с чертежами" size="large" />
           </FormItem>
 
+          {/* Категория */}
           <div style={{ display: 'flex', gap: '16px' }}>
-            <Form.Item name="category" label="Категория" rules={[{ required: true }]}>
+            <Form.Item name="categoryId" label="Категория" rules={[{ required: true }]}>
               <Select placeholder="Выберите..." size="large">
-                <Select.Option value="Электроника">Электроника</Select.Option>
-                <Select.Option value="Документы">Документы</Select.Option>
-                <Select.Option value="Одежда">Одежда</Select.Option>
-                <Select.Option value="Другое">Другое</Select.Option>
+                {categories.map(c => <Select.Option key={c.id} value={c.id}>{c.name}</Select.Option>)}
               </Select>
             </Form.Item>
 
-            <Form.Item name="location" label="Кампус" rules={[{ required: true }]} style={{ flex: 1 }}>
+            {/* Кампус */}
+            <Form.Item name="campusId" label="Кампус" rules={[{ required: true }]} style={{ flex: 1 }}>
               <Select placeholder="Где это было?" size="large">
-                <Select.Option value="пр-кт. Вернадского, 78">пр-кт. Вернадского, 78</Select.Option>
-                <Select.Option value="ул. Малая Пироговская, 1">ул. Малая Пироговская, 1</Select.Option>
+                {campuses.map(c => <Select.Option key={c.id} value={c.id}>{c.address}</Select.Option>)}
               </Select>
             </Form.Item>
           </div>
 
+          {/* Описание */}
           <Form.Item name="description" label="Подробное описание">
             <Input.TextArea rows={4} placeholder="Особые приметы..." />
           </Form.Item>

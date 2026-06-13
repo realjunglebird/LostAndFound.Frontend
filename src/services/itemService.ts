@@ -3,11 +3,17 @@ import type { Item } from "../types/item";
 export const itemService = {
 
   // Получение всех находок
-  getAllItems: async (): Promise<Item[]> => {
-    const response = await fetch('/api/items');
-    if (!response.ok) {
-      throw new Error('Ошибка при получении данных с сервера!');
-    }
+  getAllItems: async (
+    campusIds: number[] = [],
+    categoryIds: number[] = [],
+  ): Promise<Item[]> => {
+    const params = new URLSearchParams();
+
+    campusIds.forEach(id => params.append('campusId', id.toString()));
+    categoryIds.forEach(id => params.append('categoryId', id.toString()));
+
+    const response = await fetch(`/api/items?${params.toString()}`);
+    if (!response.ok) throw new Error('Ошибка при получении данных с сервера!');
     return response.json();
   },
 
