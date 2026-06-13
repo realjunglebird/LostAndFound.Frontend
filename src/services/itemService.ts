@@ -1,4 +1,5 @@
 import type { Item } from "../types/item";
+import { fetchWithAuth } from "./api";
 
 export const itemService = {
 
@@ -19,7 +20,7 @@ export const itemService = {
 
   // Получение конкретной находки
   getItemById: async (id: number | string): Promise<Item> => {
-    const response = await fetch(`/api/items/${id}`);
+    const response = await fetchWithAuth(`/api/items/${id}`);
     if (!response.ok) {
       if (response.status == 404) {
         throw new Error('Объявление не найдено!');
@@ -31,12 +32,18 @@ export const itemService = {
 
   // Добавление находки
   createItem: async (formData: FormData): Promise<Item> => {
-    const response = await fetch('/api/items', {
+    const response = await fetchWithAuth('/api/items', {
       method: 'POST',
       body: formData,
     });
 
     if (!response.ok) throw new Error('Ошибка при создании объявления!');
     return response.json();
+  },
+
+  // Удаление
+  deleteItem: async (id: number): Promise<void> => {
+    const response = await fetchWithAuth(`/api/items/${id}`, { method: 'DELETE' });
+    if (!response.ok) throw new Error('Ошибка удаления!');
   }
-}
+};

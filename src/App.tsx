@@ -7,6 +7,8 @@ import CreatePage from './pages/CreatePage';
 import ItemDetailsPage from './pages/ItemDetailsPage';
 import NotFoundPage from './pages/NotFoundPage';
 import { LookupProvider, useLookup } from './context/LookupContext';
+import { AuthProvider } from './context/AuthContext';
+import AuthPage from './pages/AuthPage';
 
 const { Content } = Layout;
 
@@ -23,6 +25,7 @@ function AppContent() {
       <Content style={{ padding: 0 }}>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/auth" element={<AuthPage />} />
           <Route path="/create" element={<CreatePage />} />
           <Route path="/item/:id" element={<ItemDetailsPage />} />
           <Route path="*" element={<NotFoundPage />} />
@@ -36,9 +39,11 @@ function AppContent() {
 export default function App() {
   return (
     <BrowserRouter>
-      <LookupProvider>
-        <AppContent />
-      </LookupProvider>
+      <AuthProvider>
+        <LookupProvider>
+          <AppContent />
+        </LookupProvider>
+      </AuthProvider>
     </BrowserRouter>
   );
 }
