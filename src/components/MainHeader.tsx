@@ -41,21 +41,26 @@ export default function MainHeader() {
       borderBottom: '1px solid #f0f0f0',
       height: '64px'
     }}>
-      <Space size={32}>
-        <div onClick={() => navigate('/')} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold', fontSize: '16px', color: '#000'}}>
-          <span style={{ fontSize: '20px' }}>🔱</span> Бюро находок
+      <div style={{ display: 'flex', alignItems: 'center', flex: 1, minWidth: 0 }}>
+        <div onClick={() => navigate('/')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold', fontSize: '16px', color: '#000'}}>
+          <SearchOutlined /> Бюро находок
         </div>
 
         <Menu
           mode="horizontal"
           defaultSelectedKeys={['1']}
-          style={{ borderBottom: 'none', minWidth: '200px' }}
+          style={{
+            marginLeft: '48px',
+            borderBottom: 'none',
+            minWidth: 0,
+            flex: 1,
+          }}
           items={[
-            { key: '1', label: 'Находки' },
-            { key: '2', label: 'Пропажи' },
+            { key: '1', label: 'Все объявления' },
+            { key: '2', label: 'Мои объявления' },
           ]}
         />
-      </Space>
+      </div>
 
       <Space size={16} align="center" style={{ flex: 1, justifyContent: 'flex-end', maxWidth: '600px' }}>
         <Input
@@ -65,7 +70,7 @@ export default function MainHeader() {
           style={{ borderRadius: '8px', width: '260px' }}
         />
 
-        <Badge dot style={{ display: 'flex' }}>
+        <Badge style={{ display: 'flex' }}>
           <Button type="text" shape="circle" icon={<BellOutlined style={{ fontSize: '18px'}} />} />
         </Badge>
 
