@@ -45,5 +45,28 @@ export const itemService = {
   deleteItem: async (id: number): Promise<void> => {
     const response = await fetchWithAuth(`/api/items/${id}`, { method: 'DELETE' });
     if (!response.ok) throw new Error('Ошибка удаления!');
-  }
+  },
+
+  // Переключение статуса "Возвращено"
+  toggleReturned: async (id: number): Promise<{ isReturned: boolean }> => {
+    const response = await fetchWithAuth(`/api/items/${id}/toggle-returned`, { method: 'PATCH' });
+    if (!response.ok) throw new Error('Ошибка при изменении статуса');
+    return response.json();
+  },
+
+  // Обновление объявления
+  updateItem: async (id: number, formData: FormData): Promise<void> => {
+    const response = await fetchWithAuth(`/api/items/${id}`, {
+      method: 'PUT',
+      body: formData,
+    });
+    if (!response.ok) throw new Error('Ошибка при обновлении объявления');
+  },
+
+  // Получение контактов владельца
+  getOwnerProfile: async (ownerId: number): Promise<{ email: string }> => {
+    const response = await fetch(`/api/users/${ownerId}`);
+    if (!response.ok) throw new Error('Владелец не найден');
+    return response.json();
+  },
 };

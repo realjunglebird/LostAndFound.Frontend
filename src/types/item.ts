@@ -8,5 +8,5 @@ export interface Item {
   dateFound: string;
   isReturned: boolean;
   imageUrl?: string;
-  ownerId?: number;
+  ownerId: number;
 }

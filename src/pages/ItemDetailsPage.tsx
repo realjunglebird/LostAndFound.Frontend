@@ -1,21 +1,25 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Spin, Alert, Tag, Space, Typography, Button, Divider } from 'antd';
-import { EnvironmentOutlined, ClockCircleOutlined, UserOutlined, ArrowLeftOutlined } from "@ant-design/icons";
+import { Spin, Alert, Tag, Space, Typography, Button, Divider, message, Popconfirm } from 'antd';
+import { EnvironmentOutlined, ClockCircleOutlined, UserOutlined, ArrowLeftOutlined, CheckCircleOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import type { Item } from "../types/item";
 import { itemService } from "../services/itemService";
 import { formatDate } from "../utils/dateUtils";
 import { useLookup } from "../context/LookupContext";
+import { useAuth } from '../context/AuthContext';
 
 const { Title } = Typography;
 
 export default function ItemDetailsPage() {
   const navigate = useNavigate();
   const { campusesMap, categoriesMap } = useLookup();
+  const { user, isAdmin, isAuthenticated } = useAuth();
   const { id } = useParams<{ id: string }>();
+
   const [item, setItem] = useState<Item | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [ownerEmail, setOwnerEmail] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) {
@@ -29,6 +33,39 @@ export default function ItemDetailsPage() {
       .catch(err => setError(err.message))
       .finally(() => setLoading(false));
   }, [id]);
+
+  const isOwner = isAuthenticated && item?.ownerId?.toString() === user?.sub;
+  const canManage = isOwner || isAdmin;
+
+  const handleDelete = async () => {
+    try {
+      await itemService.deleteItem(Number(id));
+      message.success('Объявление удалено');
+      navigate('/');
+    } catch (err: any) {
+      message.error(err.message);
+    }
+  };
+
+  const handleToggleStatus = async () => {
+    try {
+      const res = await itemService.toggleReturned(Number(id));
+      setItem(prev => prev ? { ...prev, isReturned: res.isReturned } : null);
+      message.success('Статус обновлён');
+    } catch (err: any) {
+      message.error(err.message);
+    }
+  };
+
+  const handleContact = async () => {
+    if (!item) return;
+    try {
+      const profile = await itemService.getOwnerProfile(item.ownerId);
+      setOwnerEmail(profile.email);
+    } catch (err: any) {
+      message.error('Не удалось загрузить контакты');
+    }
+  };
 
   if (loading) return <div style={{ textAlign: 'center', padding: '50px' }}><Spin size="large" /></div>;
   if (error || !item) return <div style={{ padding: '50px' }}><Alert title="Ошибка" description={error} type="error" /></div>;
@@ -45,7 +82,26 @@ export default function ItemDetailsPage() {
         Назад к ленте
       </Button>
 
-      <Title level={3} style={{ marginTop: 0, marginBottom: '24px'}}>Детали объявления</Title>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+        <Title level={3} style={{ marginTop: 0, marginBottom: '24px'}}>Детали объявления</Title>
+
+        {canManage && (
+          <Space>
+            <Button
+              type={item.isReturned ? "default" : "primary"}
+              icon={<CheckCircleOutlined />}
+              onClick={handleToggleStatus}
+              style={!item.isReturned ? { backgroundColor: '#52c41a' } : {}}
+            >
+              {item.isReturned ? 'Вернуть в активные' : 'Отметить как возвращённое'}
+            </Button>
+            <Button icon={<EditOutlined />} onClick={() => navigate(`/edit/${item.id}`)}>Редактировать</Button>
+            <Popconfirm title="Удалить объявление?" onConfirm={handleDelete} okText="Да" cancelText="Нет">
+              <Button danger icon={<DeleteOutlined />} />
+            </Popconfirm>
+          </Space>
+        )}
+      </div>
 
       {/* Левая колонка - Картинка */}
       <div style={{ display: 'flex', gap: '32px', backgroundColor: '#fff', padding: '32px', borderRadius: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
@@ -81,11 +137,15 @@ export default function ItemDetailsPage() {
                 <UserOutlined style={{ color: '#bfbfbf', fontSize: '20px' }} />
               </div>
               <div>
-                <div style={{ fontWeight: 600 }}>Студент РТУ МИРЭА</div>
+                <div style={{ fontWeight: 600 }}>{ownerEmail || 'Студент РТУ МИРЭА'}{isAdmin && (` | ID: ${item.ownerId}`)}</div>
                 <div style={{ fontSize: '12px', color: '#8c8c8c' }}>Владелец объявления</div>
               </div>
             </Space>
-            <Button type="primary" size="large">Связаться</Button>
+            {!ownerEmail ? (
+              <Button type="primary" size="large" onClick={handleContact}>Связаться</Button>
+            ) : (
+              <Button type="default" size="large" href={`mailto:${ownerEmail}`}>Написать письмо</Button>
+            )}
           </div>
         </div>
       </div>

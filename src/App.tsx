@@ -27,6 +27,7 @@ function AppContent() {
           <Route path="/" element={<HomePage />} />
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/create" element={<CreatePage />} />
+          <Route path="/edit/:id" element={<CreatePage />} />
           <Route path="/item/:id" element={<ItemDetailsPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
