@@ -1,20 +1,41 @@
 import type { Item } from "../types/item";
+import type { PaginatedResponse } from "../types/paginatedResponse";
 import { fetchWithAuth } from "./api";
 
 export const itemService = {
 
   // Получение всех находок
-  getAllItems: async (
-    campusIds: number[] = [],
-    categoryIds: number[] = [],
-  ): Promise<Item[]> => {
-    const params = new URLSearchParams();
+  getAllItems: async ( params: {
+    campusIds?: number[];
+    categoryIds?: number[];
+    search?: string;
+    status?: string;
+    startDate?: string;
+    endDate?: string;
+    ownerId?: number;
+    page?: number;
+    pageSize?: number;
+  }): Promise<PaginatedResponse<Item>> => {
 
-    campusIds.forEach(id => params.append('campusId', id.toString()));
-    categoryIds.forEach(id => params.append('categoryId', id.toString()));
+    // Сборка URL-параметров
+    const queryParams = new URLSearchParams();
 
-    const response = await fetch(`/api/items?${params.toString()}`);
-    if (!response.ok) throw new Error('Ошибка при получении данных с сервера!');
+    if (params.campusIds) params.campusIds.forEach(id => queryParams.append('campusId', id.toString()));
+    if (params.categoryIds) params.categoryIds.forEach(id => queryParams.append('categoryId', id.toString()));
+
+    if (params.search) queryParams.append('search', params.search);
+    if (params.status) queryParams.append('status', params.status);
+
+    if (params.startDate) queryParams.append('startDate', params.startDate);
+    if (params.endDate) queryParams.append('endDate', params.endDate);
+
+    if (params.ownerId) queryParams.append('ownerId', params.ownerId.toString());
+
+    queryParams.append('page', (params.page || 1).toString());
+    queryParams.append('pageSize', (params.pageSize || 12).toString());
+
+    const response = await fetch(`/api/items?${queryParams.toString()}`);
+    if (!response.ok) throw new Error('Ошибка при загрузке объявлений с сервера.');
     return response.json();
   },
 
