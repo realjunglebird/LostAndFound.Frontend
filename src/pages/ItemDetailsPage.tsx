@@ -103,8 +103,9 @@ export default function ItemDetailsPage() {
         )}
       </div>
 
-      {/* Левая колонка - Картинка */}
       <div style={{ display: 'flex', gap: '32px', backgroundColor: '#fff', padding: '32px', borderRadius: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+
+        {/* Левая колонка - Картинка */}
         <div style={{ flex: '0 0 400px', borderRadius: '12px', overflow: 'hidden', backgroundColor: '#e8edf3', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '300px' }}>
           {item.imageUrl? (
             <img src={item.imageUrl} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />

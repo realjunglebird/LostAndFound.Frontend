@@ -9,6 +9,8 @@ import NotFoundPage from './pages/NotFoundPage';
 import { LookupProvider, useLookup } from './context/LookupContext';
 import { AuthProvider } from './context/AuthContext';
 import AuthPage from './pages/AuthPage';
+import EditProfilePage from './pages/EditProfilePage';
+import ProfilePage from './pages/ProfilePage';
 
 const { Content } = Layout;
 
@@ -26,6 +28,8 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/auth" element={<AuthPage />} />
+          <Route path="/profile/edit/:id" element={<EditProfilePage />}/>
+          <Route path="/profile/:id" element={<ProfilePage />}/>
           <Route path="/create" element={<CreatePage />} />
           <Route path="/edit/:id" element={<CreatePage />} />
           <Route path="/item/:id" element={<ItemDetailsPage />} />

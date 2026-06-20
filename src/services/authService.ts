@@ -22,10 +22,20 @@ export const authService = {
     return response.json();
   },
 
-  register: async (email: string, password: string): Promise<{ message: string }> => {
+  register: async (
+    email: string,
+    password: string,
+    name: string,
+    lastName: string,
+    middleName?: string,
+  ): Promise<{ message: string }> => {
     const formData = new FormData();
+
     formData.append('email', email);
     formData.append('password', password);
+    formData.append('name', name);
+    formData.append('lastName', lastName);
+    if (middleName) formData.append('middlename', middleName);
 
     const response = await fetch('/api/auth/register', {
       method: 'POST',

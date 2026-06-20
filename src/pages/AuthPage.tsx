@@ -33,7 +33,13 @@ export default function AuthPage() {
     }
     setLoading(true);
     try {
-      await authService.register(values.email, values.password);
+      await authService.register(
+        values.email,
+        values.password,
+        values.name,
+        values.lastName,
+        values.middleName,
+      );
       message.success('Регистрация успешна! Теперь вы можете войти.');
       setActiveTab('login'); // Переключаем на вкладку входа
     } catch (error: any) {
@@ -66,6 +72,15 @@ export default function AuthPage() {
       label: 'Регистрация',
       children: (
         <Form layout="vertical" onFinish={handleRegister} size="large">
+          <Form.Item name="name" rules={[{ required: true, message: 'Введите ваше имя' }, { type: 'string', message: 'Введите ваше имя' }]}>
+            <Input prefix={<UserOutlined />} placeholder="Иван" />
+          </Form.Item>
+          <Form.Item name="lastName" rules={[{ required: true, message: 'Введите вашу фамилию' }, { type: 'string', message: 'Введите вашу фамилию' }]}>
+            <Input prefix={<UserOutlined />} placeholder="Иванов" />
+          </Form.Item>
+          <Form.Item name="middleName" rules={[{ required: false, message: 'Введите ваше отчество' }, { type: 'string', message: 'Введите ваше отчество' }]}>
+            <Input prefix={<UserOutlined />} placeholder="Иванович" />
+          </Form.Item>
           <Form.Item name="email" rules={[{ required: true, message: 'Введите почту' }, { type: 'email', message: 'Некорректный email' }]}>
             <Input prefix={<UserOutlined />} placeholder="Email" />
           </Form.Item>

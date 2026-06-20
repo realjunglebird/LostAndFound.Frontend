@@ -1,5 +1,5 @@
-import { Card, Tag, Space, Typography } from 'antd';
-import { EnvironmentOutlined, ClockCircleOutlined, } from '@ant-design/icons';
+import { Avatar, Card, Tag, Space, Typography } from 'antd';
+import { EnvironmentOutlined, ClockCircleOutlined, UserOutlined, } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import type { Item } from '../types/item';
 import { useLookup } from '../context/LookupContext';
@@ -50,6 +50,32 @@ export default function ItemCard({ item }: Props) {
             <p style={{ color: '#434343', marginTop: '8px', height: '44px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {item.description || 'Без описания'}
             </p>
+
+            {/* НОВЫЙ БЛОК: Кликабельный автор */}
+            {item.ownerId && (
+              <div
+                onClick={(e) => {
+                  e.stopPropagation(); // Блокируем клик по самой карточке
+                  navigate(`/profile/${item.ownerId}`);
+                }}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  cursor: 'pointer',
+                  padding: '4px 8px',
+                  backgroundColor: '#f5f5f5',
+                  borderRadius: '6px',
+                  width: 'fit-content'
+                }}
+              >
+                <Avatar size="small" icon={<UserOutlined />} style={{ backgroundColor: '#bfbfbf' }} />
+                {/* Если с бэка приходит OwnerName, можно использовать его, иначе просто Пишем "Студент #ID" */}
+                <Text strong style={{ color: '#595959', fontSize: '13px' }}>
+                  {(item as any).ownerName || `Студент #${item.ownerId}`}
+                </Text>
+              </div>
+            )}
           </Space>
         }
       />

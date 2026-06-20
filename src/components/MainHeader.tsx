@@ -50,6 +50,12 @@ export default function MainHeader() {
     },
     { type: 'divider' as const },
     {
+      key: 'profile_link',
+      icon: <UserOutlined />,
+      label: 'Личный кабинет',
+      onClick: () => navigate(`/profile/${user?.sub}`),
+    },
+    {
       key: 'logout',
       icon: <LogoutOutlined />,
       danger: true,
