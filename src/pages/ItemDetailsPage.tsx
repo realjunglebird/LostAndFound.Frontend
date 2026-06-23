@@ -8,7 +8,7 @@ import { formatDate } from "../utils/dateUtils";
 import { useLookup } from "../context/LookupContext";
 import { useAuth } from '../context/AuthContext';
 
-const { Title } = Typography;
+const { Title, Paragraph, Text } = Typography;
 
 export default function ItemDetailsPage() {
   const navigate = useNavigate();
@@ -68,7 +68,7 @@ export default function ItemDetailsPage() {
   };
 
   if (loading) return <div style={{ textAlign: 'center', padding: '50px' }}><Spin size="large" /></div>;
-  if (error || !item) return <div style={{ padding: '50px' }}><Alert title="Ошибка" description={error} type="error" /></div>;
+  if (error || !item) return <div style={{ padding: '50px' }}><Alert message="Ошибка" description={error} type="error" /></div>;
 
   return (
     <div style={{ maxWidth: '1000px', margin: '40px auto', padding: '0 24px' }}>
@@ -132,16 +132,44 @@ export default function ItemDetailsPage() {
 
           <Divider />
 
+          {/* Вывод описания вещи */}
+          <Text type="secondary" style={{ display: 'block', marginBottom: '8px' }}>Описание</Text>
+          <Paragraph style={{ fontSize: '16px', color: '#1c2434', whiteSpace: 'pre-wrap' }}>
+            {item.description || 'Особые приметы не указаны.'}
+          </Paragraph>
+
+          <Divider />
+
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <Space>
-              <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <UserOutlined style={{ color: '#bfbfbf', fontSize: '20px' }} />
+
+            {/* Автор */}
+            <div
+              onClick={() => navigate(`/profile/${item.ownerId}`)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                cursor: 'pointer',
+                padding: '8px',
+                borderRadius: '8px',
+                transition: 'background-color 0.2s ease',
+                marginLeft: '-8px' // Компенсируем padding для визуального выравнивания
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+            >
+              <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#e8edf3', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <UserOutlined style={{ color: '#2b82fb', fontSize: '20px' }} />
               </div>
               <div>
-                <div style={{ fontWeight: 600 }}>{ownerEmail || 'Студент РТУ МИРЭА'}{isAdmin && (` | ID: ${item.ownerId}`)}</div>
-                <div style={{ fontSize: '12px', color: '#8c8c8c' }}>Владелец объявления</div>
+                <div style={{ fontWeight: 600, color: '#1c2434' }}>
+                  {ownerEmail || `Студент #${item.ownerId}`}
+                  {isAdmin && (` | ID: ${item.ownerId}`)}
+                </div>
+                <div style={{ fontSize: '12px', color: '#8c8c8c' }}>Владелец объявления (Перейти в профиль)</div>
               </div>
-            </Space>
+            </div>
+
             {!ownerEmail ? (
               <Button type="primary" size="large" onClick={handleContact}>Связаться</Button>
             ) : (
