@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Card, Tag, Checkbox, Space, Empty, Layout, Typography, Button, Row, Col, Select, Spin, Alert, Pagination, Radio, DatePicker } from 'antd';
+import { Card, Tag, Checkbox, Space, Empty, Layout, Typography, Button, Row, Col, Spin, Pagination, Radio, DatePicker } from 'antd';
 import { PlusOutlined, EnvironmentOutlined, AppstoreOutlined, AlertOutlined, CalendarOutlined } from '@ant-design/icons';
 import type { Item } from '../types/item';
 import { itemService } from '../services/itemService';
@@ -7,8 +7,8 @@ import ItemCard from '../components/ItemCard';
 import { useLookup } from '../context/LookupContext';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import dayjs from 'dayjs'; // Импортируем dayjs для работы с DatePicker
 
-const { Content } = Layout;
 const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
 
@@ -18,34 +18,61 @@ export default function HomePage() {
   const { campuses, categories } = useLookup();
   const { user, isAuthenticated } = useAuth();
 
-  // Локальные стейты для фильтров
-  const [selectedCampuses, setSelectedCampuses] = useState<number[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
-  const [selectedStatus, setSelectedStatus] = useState<string>('');
-  const [dateRange, setDateRange] = useState<[string, string] | null>(null);
-
   // Стейты данных
   const [items, setItems] = useState<Item[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Получение параметров из URL
+  // 1. ПОЛУЧЕНИЕ ПАРАМЕТРОВ НАПРЯМУЮ ИЗ URL (Single Source of Truth)
   const currentPage = Number(searchParams.get('page')) || 1;
   const currentTab = searchParams.get('tab') || '1';
   const searchQuery = searchParams.get('search') || undefined;
 
+  const selectedCampuses = searchParams.getAll('campus').map(Number);
+  const selectedCategories = searchParams.getAll('category').map(Number);
+  const selectedStatus = searchParams.get('status') || '';
+  const startDate = searchParams.get('startDate');
+  const endDate = searchParams.get('endDate');
+
+  // 2. УНИВЕРСАЛЬНАЯ ФУНКЦИЯ ОБНОВЛЕНИЯ URL
+  const updateFilterParams = (key: string, values: string | string[] | null) => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.delete(key); // Очищаем старые значения ключа
+
+    if (Array.isArray(values)) {
+      values.forEach(v => newParams.append(key, v)); // Для чекбоксов (множественные значения)
+    } else if (values) {
+      newParams.set(key, values); // Для радиокнопок и одиночных строк
+    }
+
+    newParams.set('page', '1'); // При любом изменении фильтра сбрасываем на первую страницу
+    setSearchParams(newParams);
+  };
+
+  const handleDateChange = (dates: any, dateStrings: [string, string]) => {
+    const newParams = new URLSearchParams(searchParams);
+    if (dates) {
+      newParams.set('startDate', dateStrings[0]);
+      newParams.set('endDate', dateStrings[1]);
+    } else {
+      newParams.delete('startDate');
+      newParams.delete('endDate');
+    }
+    newParams.set('page', '1');
+    setSearchParams(newParams);
+  };
+
   useEffect(() => {
     setLoading(true);
-
     const ownerId = currentTab === '2' && user ? Number(user.sub) : undefined;
 
     itemService.getAllItems({
       campusIds: selectedCampuses,
       categoryIds: selectedCategories,
       status: selectedStatus || undefined,
-      startDate: dateRange ? dateRange[0] : undefined,
-      endDate: dateRange ? dateRange[1] : undefined,
+      startDate: startDate || undefined,
+      endDate: endDate || undefined,
       search: searchQuery,
       ownerId: ownerId,
       page: currentPage,
@@ -58,17 +85,10 @@ export default function HomePage() {
       .catch(err => setError(err.message || 'Что-то пошло не так...'))
       .finally(() => setLoading(false));
   }, [
-    selectedCampuses,
-    selectedCategories,
-    selectedStatus,
-    dateRange,
-    currentPage,
-    currentTab,
-    searchQuery,
+    searchParams, // Запрос на бэкенд улетает при любом изменении параметров в URL
     user,
   ]);
 
-  // Смена страницы
   const handlePageChange = (page: number) => {
     const newParams = new URLSearchParams(searchParams);
     newParams.set('page', page.toString());
@@ -110,7 +130,7 @@ export default function HomePage() {
               <Radio.Group
                 style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '8px' }}
                 value={selectedStatus}
-                onChange={e => setSelectedStatus(e.target.value)}
+                onChange={e => updateFilterParams('status', e.target.value)}
               >
                 <Radio value="">Все</Radio>
                 <Radio value="lost">Потеряно</Radio>
@@ -123,7 +143,8 @@ export default function HomePage() {
               <Title level={5} style={{ marginBottom: '16px' }}><CalendarOutlined /> Дата публикации</Title>
               <RangePicker
                 style={{ width: '100%' }}
-                onChange={(dates, dateStrings) => setDateRange(dates ? [dateStrings[0], dateStrings[1]] : null)}
+                value={startDate && endDate ? [dayjs(startDate), dayjs(endDate)] : null}
+                onChange={handleDateChange}
               />
             </div>
 
@@ -133,9 +154,9 @@ export default function HomePage() {
               <Checkbox.Group
                 style={{ width: '100%' }}
                 value={selectedCampuses}
-                onChange={(checkedValues) => setSelectedCampuses(checkedValues as number[])}
+                onChange={(values) => updateFilterParams('campus', values.map(String))}
               >
-                <Space orientation="vertical" style={{ width: '100%' }}>
+                <Space direction="vertical" style={{ width: '100%' }}>
                   {campuses.map(campus => (
                     <Checkbox key={campus.id} value={campus.id}>
                       {campus.address}
@@ -151,9 +172,9 @@ export default function HomePage() {
               <Checkbox.Group
                 style={{ width: '100%' }}
                 value={selectedCategories}
-                onChange={(checkedValues) => setSelectedCategories(checkedValues as number[])}
+                onChange={(values) => updateFilterParams('category', values.map(String))}
               >
-                <Space orientation="vertical" style={{ width: '100%' }}>
+                <Space direction="vertical" style={{ width: '100%' }}>
                   {categories.map(cat => (
                     <Checkbox key={cat.id} value={cat.id}>
                       {cat.name}
