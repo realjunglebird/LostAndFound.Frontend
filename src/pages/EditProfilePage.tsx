@@ -32,7 +32,6 @@ export default function EditProfilePage() {
   const handleFinish = async (values: any) => {
     setSaving(true);
     try {
-      // Предполагается, что на бэке есть метод PUT /api/users/{id}
       await userService.updateUser(Number(id), values);
       message.success('Данные успешно обновлены');
       navigate(`/profile/${id}`);

@@ -106,7 +106,7 @@ export default function CreatePage() {
 
         <Form form={form} layout="vertical" onFinish={handleFinish} initialValues={{ status: 'found' }}>
 
-          {/* СЕКРЕТНЫЙ БЛОК АДМИНИСТРАТОРА */}
+          {/* БЛОК АДМИНИСТРАТОРА */}
           {isAdmin && isEditMode && (
             <div style={{ padding: '16px', backgroundColor: '#fff1f0', border: '1px solid #ffa39e', borderRadius: '8px', marginBottom: '24px' }}>
               <Title level={5} type="danger">Режим Администратора</Title>

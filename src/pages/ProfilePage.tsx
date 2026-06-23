@@ -51,7 +51,7 @@ export default function ProfilePage() {
       <Button
         type="text"
         icon={<ArrowLeftOutlined />}
-        onClick={() => navigate(-1)} // Возвращаемся на предыдущую страницу логически
+        onClick={() => navigate(-1)} // Возвращаемся на предыдущую страницу
         style={{ marginBottom: '20px' }}
       >
         Назад

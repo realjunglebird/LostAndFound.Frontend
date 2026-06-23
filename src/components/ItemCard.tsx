@@ -51,7 +51,7 @@ export default function ItemCard({ item }: Props) {
               {item.description || 'Без описания'}
             </p>
 
-            {/* НОВЫЙ БЛОК: Кликабельный автор */}
+            {/* Автор */}
             {item.ownerId && (
               <div
                 onClick={(e) => {
@@ -70,7 +70,6 @@ export default function ItemCard({ item }: Props) {
                 }}
               >
                 <Avatar size="small" icon={<UserOutlined />} style={{ backgroundColor: '#bfbfbf' }} />
-                {/* Если с бэка приходит OwnerName, можно использовать его, иначе просто Пишем "Студент #ID" */}
                 <Text strong style={{ color: '#595959', fontSize: '13px' }}>
                   {(item as any).ownerName || `Студент #${item.ownerId}`}
                 </Text>
